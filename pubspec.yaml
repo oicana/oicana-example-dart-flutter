@@ -1,0 +1,26 @@
+name: oicana_example_dart_flutter
+description: Example Flutter app that uses Oicana to create PDFs on the device.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.0
+  flutter: '>=3.41.0'
+
+dependencies:
+  file_selector: ^1.1.0
+  flutter:
+    sdk: flutter
+  oicana: ^0.10.0-rc.3
+  share_plus: ^13.3.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - templates/
+

@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+     - main
+  workflow_dispatch:
+
+jobs:
+  flutter-ci:
+    name: Format, linting, and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: install dependencies
+        run: flutter pub get
+      - name: check format
+        run: dart format --output=none --set-exit-if-changed .
+      - name: run analyzer
+        run: flutter analyze --fatal-infos
+      - name: run tests
+        run: flutter test
+
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: apk, os: ubuntu-latest }
+          - { target: web, os: ubuntu-latest }
+          - { target: linux, os: ubuntu-latest }
+          - { target: ios --no-codesign, os: macos-latest }
+          - { target: macos, os: macos-latest }
+          - { target: windows, os: windows-latest }
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: install Linux build dependencies
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev
+      - name: build
+        run: flutter build ${{ matrix.target }}
+
+  spelling:
+    name: Spell Check with Typos
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Actions Repository
+      uses: actions/checkout@v6
+    - name: Spell Check Repo
+      uses: crate-ci/typos@v1.35.5
+
+  validate-links:
+    name: Check for dead links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: check readme links
+        run: npx linkinator README.md --config .github/linkinator.config.json
