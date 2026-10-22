@@ -11,7 +11,7 @@ dependencies:
   file_selector: ^1.1.0
   flutter:
     sdk: flutter
-  oicana: ^0.10.0-rc.3
+  oicana: ^0.10.0
   share_plus: ^13.3.0
 
 dev_dependencies:
